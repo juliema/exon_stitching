@@ -12,11 +12,6 @@ my $path = shift;
 #my $path = '/data/anoplura/HaeleCombined/1107_Contigs/BESTFILES';  ## path to where the aTRAM contigs are
 ##############################################
 
-#my $fastafile=$path\/$gene.$lib.$aTRAMfile.ed.fasta;
-
-open CONTIGINFO, ">Gene.Contig.Info.txt";
-print CONTIGINFO "Gene\tLib\tNumcontigs\tUnique\tDiff\n";
-
 system "ls -l *.stats.OVERLAP.$overlap.csv >files";
 open FH, "<files";
 while (<FH>) {
@@ -29,8 +24,7 @@ while (<FH>) {
 				my $lib=$1;
 				my $contig=$2;
 				my $seqflag=0;
-				#print "MY LIB IS $lib\n MY FILE IS $path\/$lib\_$gene.$aTRAMfile.ed.fasta\n\n";
-				open FASTA, "<$path\/$gene.$lib.$aTRAMfile.ed.fasta";
+				open FASTA, "$lib";
 				while (<FASTA>) { #print;
 					$line=$_;
 					#print;
@@ -61,7 +55,8 @@ while (<FH>) {
 					chomp $contig;
 					my $seqflag=0;
 					my $sequence=();
-                               		open FASTA, "<$path\/$gene.$lib.$aTRAMfile.ed.fasta";
+                               		open FASTA, "<$lib";
+                               		#open FASTA, "<$path\/$gene.$lib.$aTRAMfile.ed.fasta";
 					#open FASTA, "<$gene.results.ed.fasta";
 					while (<FASTA>) {
 						$line=$_;
@@ -109,7 +104,7 @@ while (<FH>) {
 					}
 					my $diff = $numcontigs - $countunique;
 					#print CONTIGINFO " diff = $numcontigs - $coununique\n";
-					print CONTIGINFO "$gene\t$lib\t$numcontigs\t$countunique\t$diff\n";
+					#print CONTIGINFO "$gene\t$lib\t$numcontigs\t$countunique\t$diff\n";
 					for (0..($numcontigs-1)) {
 						my $contignumber=$_;
 						#$libcontnumberhash{$lib}=$numcontigs;
@@ -138,7 +133,7 @@ while (<FH>) {
 							#print OUT1 "\n";
 							### REMOVE
 				        		#print "MY FILE IS $path\/$lib\_$gene.$aTRAMfile.ed.fasta\n\n";
- 							open FASTA, "<$path\/$gene.$lib.$aTRAMfile.ed.fasta";
+ 							open FASTA, "<$lib";
 							#open FASTA, "<$gene.results.ed.fasta";
 							while (<FASTA>) {
 								#print;
@@ -172,7 +167,7 @@ while (<FH>) {
 							#print OUT1 "LAST SEQ\n";
 							#print OUT1 "  $lib.$contig\_$start\_$end\n";
 				        		#print "MY FILE IS $path\/$lib\_$gene.$aTRAMfile.ed.fasta\n\n";
- 							open FASTA, "<$path\/$gene.$lib.$aTRAMfile.ed.fasta";
+ 							open FASTA, "<$lib";
 							#open FASTA, "<$gene.results.ed.fasta";
 							while (<FASTA>) {
 								#print;
@@ -206,7 +201,7 @@ while (<FH>) {
 							#print OUT1 "LAST SEQ\n";
 							#print "MATCH  $lib.$contig\_$start\_$end\n";
 				        		#print "MY FILE IS $path\/$lib\_$gene.$aTRAMfile.ed.fasta\n\n";
- 							open FASTA, "<$path\/$gene.$lib.$aTRAMfile.ed.fasta";
+ 							open FASTA, "<$lib";
 							#open FASTA, "<$gene.results.ed.fasta";
 							$gapstart = $end + 1;
 							while (<FASTA>) {

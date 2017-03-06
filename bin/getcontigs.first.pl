@@ -25,10 +25,10 @@ while (<FILES>) {
 		open STATS, ">$statoutput"; my $date=localtime(time);
 		print STATS "Statistics from aTRAM assemblies on $date\n";
 		print STATS "Inputfile\t$inputfile.csv\n";
-		# print "Statistics from aTRAM assemblies on $date\n";
-		print "Inputfile\t$inputfile.sorted\n";
+		#print "Statistics from aTRAM assemblies on $date\n";
+		#print "Inputfile\t$inputfile.sorted\n";
 		print STATS "Allowing overlap $overlap\n";
-		print  "Allowing overlap $overlap\n";
+		#print  "Allowing overlap $overlap\n";
 		my @taxarray=(); my $counttax=0; my %taxhash=();
 		###############  Get list of taxa from file.
 		open FH, "<$inputfile.sorted.csv";

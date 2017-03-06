@@ -4,13 +4,16 @@ use strict;
 use warnings;
 
 my $pwd=shift;
+
+print "$pwd\n";
+
 ## get list of best files in this directory
 #`find -name "*best.fasta" | sed 's/^\\.\\///' >files`; # Use this version for very large numbers of files; sed patterns must be double-escaped
 
 `find $pwd -name  "*best.fasta"  >files`; # Use this version for very large numbers of files; sed patterns must be double-escaped
 
 ## open each file, remove funky characters and add a unique number to the end of ecach contig name. 
-open FH, "<$pwd\/files";
+open FH, "<files"; 
 while (<FH>) { # print;
 	if (/(\S+).best.fasta/) {
 		my $file=$1; print "$file\n";
