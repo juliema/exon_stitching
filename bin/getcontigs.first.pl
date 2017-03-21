@@ -20,15 +20,11 @@ open FILES, "<files";
 while (<FILES>) {
 	if (/(\S+).sorted.csv/) {
 		my $inputfile=$1; 
-		#$inputfile =~ s/.csv//g;
 		my $statoutput= "$inputfile.stats.OVERLAP.$overlap.csv";
 		open STATS, ">$statoutput"; my $date=localtime(time);
 		print STATS "Statistics from aTRAM assemblies on $date\n";
 		print STATS "Inputfile\t$inputfile.csv\n";
-		#print "Statistics from aTRAM assemblies on $date\n";
-		#print "Inputfile\t$inputfile.sorted\n";
 		print STATS "Allowing overlap $overlap\n";
-		#print  "Allowing overlap $overlap\n";
 		my @taxarray=(); my $counttax=0; my %taxhash=();
 		###############  Get list of taxa from file.
 		open FH, "<$inputfile.sorted.csv";
@@ -39,6 +35,7 @@ while (<FILES>) {
 		print STATS "Library,Number of Contigs,GeneLength,Full Gene (T/F),FG_Assembler,Assembler,LastContigNumber,TotalNumberofContigs,ContigstoKeep,Assembler,TotalOverlap,CombinedContigLength,Beginning,End,Beginning,End,ContigName\n";
 		############### Now for each taxon in the file loop through and find the best contig(s).
 		for my $tax (@taxarray) {
+			my $shorttax= $tax;   $shorttax=~ s/\S+\/(\S+)\.best.ed.fasta/$1/g; #print "shorttax $shorttax\n";
 			print STATS "$tax,"; #print "\n\n$tax\n\n";
 			my @contigarray=(); my $numcontigs=0; my @bigarray=(); my %contighash=();
 			############  count the number of contigs for each taxon, and push the line to array of arrays, and contig into an array.
@@ -52,6 +49,7 @@ while (<FILES>) {
 				}	
 			}
 			close FH1;
+			### THIS WORKS. 3.21.17
 			print STATS "$numcontigs,$bigarray[0][0],";  ## printing the number of contigs and the length of the full gene. 
 			#####  Get statistics on each contig and find the best one per taxon.
 			my $flag=0; #my $fullgene=0;
@@ -61,60 +59,77 @@ while (<FILES>) {
 				my $cont=$_;
 				my $cdslength=$bigarray[$cont][0];
 				my $alcontlength=$bigarray[$cont][1];
-				#### if there is a contig with the whole length of the gene take it. Preference is trinity.
-				if ($cdslength == $alcontlength) { 
+				#### if there is a contig with the whole length of the gene take it.
+				if ($cdslength == $alcontlength) { #print "\t\t$shorttax\t contig with whole length of gene contig $cdslength  and whole length $alcontlength\n";
 					$contighash{$tax}=$contigarray[$cont];
 					$flag=1;
 					$beg=$bigarray[$cont][2];
 					$end=$bigarray[$cont][3];
+					last;  ## breaking the loop if a full gene is found.. dont need to keep searching.  
 				}
 			}
-			####  if we have a full gene for either trinity or abyss print out and end.
+			####  if we have a full gene print out and end.
 			if ($flag == 1 ) { 
-				#print "fullgene\t$assembler and BEG $beg END $end\n"; print STATS "TRUE,$assembler,,,,,,,,0,$beg,$end,CONTIGS,$contighash{$tax}";  
+				print "\t\t FULLGENE $shorttax fullgene\t$assembler and BEG $beg END $end\n"; print STATS "TRUE,$assembler,,,,,,,,0,$beg,$end,CONTIGS,$contighash{$tax}";  
 			}
 			#### If there is not one contig that is the whole length, go to last iteration, how many contigs from each assembler?  and examine the length of the contigs.
+			#### removing last iteration part.. now just examine the length of the contigs.
 			if ($flag == 0) {
+				##### FINDING THE ITERATION NUMBER AND TAKING THE LAST ONE  FOR THOSE WITHOUT ITERATIONS THIS IS A PROBLEM
 				# These variables are needed from every loop
 				my ($sum, $numlastcontig,  $numtokeep, $lastcontig, $totoverlap) = (0) x 5;
 				my (@begarray,  @endarray, @keepcontigarray, %keepcontighashBeg, %keepcontighashEnd);
 				print STATS "FALSE,NA,";  ## not a full gene so FALSE in stats file and will give assembler later.
-				#print "Not full GENE number of contigs is $numcontigs\n\n";
-				for (0..($numcontigs-1)) {
-					my $pos=$_;
-					#if ($bigarray[$pos][4] eq 'trinity') {  
-					my $contig=$contigarray[$pos]; 
-					#print "LINE 88 position $pos CONTIG $contig\n";
-					$contig =~ s/^(\d)\S+/$1/;
-					if ($contig == $lastcontig) { $numlastcontig++; }
-					elsif ($contig > $lastcontig) {  $numlastcontig=1; $lastcontig=$contig; }
-				}	
+				print "\t\t$shorttax Not full GENE number of contigs is $numcontigs\n";
+				####  THIS PART TAKES INTO ACCOUNT THE ITERATION NUMBER __ GOING TO REMOVE __ 
+				#for (0..($numcontigs-1)) {
+				#	my $pos=$_;
+				#	#if ($bigarray[$pos][4] eq 'trinity') {  
+				#	my $contig=$contigarray[$pos]; 
+				#	print "LINE 88 position $pos CONTIG $contig\n";
+				#	### what is this line doing? 
+				#	#print "line 90 $contig\n";
+				#	$contig =~ s/^(\d)\S+/$1/;
+				#	#print "line 92 $contig\n";
+				#	if ($contig == $lastcontig) { print "contig $contig equals last contig $lastcontig\n"; $numlastcontig++; }
+				#	elsif ($contig > $lastcontig) {  print "$contig > $lastcontig\n";  $numlastcontig=1; $lastcontig=$contig; }
+				#}	
+				
+				###e OK THIS IS PRINTING OUT THE ITERATION NUMBER>>> SHOULD BE REMOVED 
 				print STATS "$assembler,$lastcontig,$numlastcontig,";
 				#print  "$assembler,Last Contig $lastcontig,Number of contigs last iteration $numlastcontig\n";
 				#########################################################
 				##### number of contigs = 1  
 				#########################################################
-				if ($numlastcontig == 1) { #print "line 105 num last contigs =1\n";
+				#### EDITS MARCH 21 2017
+				if ($numcontigs == 1) { print "\t\t\tline 105 num contigs is 1\n";
+				#if ($numlastcontig == 1) { #print "line 105 num last contigs =1\n";
 					$numtokeep=1;  
-					for (0..($numcontigs-1)) {
-						my $pos=$_;
+					#for (0..($numcontigs-1)) {
+						### EDITS MARCH 21 2017
+						my $pos=0;
+						#my $pos=$_;
 						#if ($bigarray[$pos][4] eq 'trinity') {
+						### EDITS MARCH 21 2017
+						#my $contig=$contigarray[0];
 						my $contig=$contigarray[$pos];
-						$contig =~ s/^(\d)\S+/$1/;
-						if ($contig == $lastcontig)  {
-							$sum=$bigarray[$pos][1];
-							my $contig=$contigarray[$pos]; push @keepcontigarray, $contig;
+						#$contig =~ s/^(\d)\S+/$1/;
+						#if ($contig == $lastcontig)  {
+						#	$sum=$bigarray[$pos][1];
+						#	my $contig=$contigarray[$pos]; push @keepcontigarray, $contig;
 							my $beg=$bigarray[$pos][2]; push @begarray, $beg; $keepcontighashBeg{$contig}=$beg;
 							my $end=$bigarray[$pos][3]; push @endarray, $end; $keepcontighashEnd{$contig}=$end;
 							print STATS "1,$assembler,0,$sum,$beg,$end,CONTIGS,$contig";
-						}
-					}
+						#}
+					#}
 				}
 				my (@lengtharray); 
 				#########################################################
 				##### Number of Contigs  > 1  
 				#########################################################
-				if ($numlastcontig > 1) {
+				#### EDITS MARCH 21 2017
+				if ($numcontigs > 1) {  print "\t\t\tline 131 num contigs is > 1\n";
+				#if ($numlastcontig > 1) {
 					my @comparecontigarray=();
 					#print "Number of contigs is > 1 total numcontigs = $numcontigs and last contig = $numlastcontig\n";	
 					my $total=$numcontigs-1;
@@ -123,30 +138,30 @@ while (<FILES>) {
 						#print "line 124 for 0 to $total position $pos\n";
 						#if ($bigarray[$pos][4] eq 'abyss') {
 						my $contig=$contigarray[$pos];
-						$contig =~ s/^(\d)\S+/$1/;
+						#$contig =~ s/^(\d)\S+/$1/;
 						#$tax last abyss  contig  $lastAcontig  number of contigs $numlastAcontig\n";
-						if ($contig == $lastcontig) {
+						#if ($contig == $lastcontig) {
 							#print "last Abyss contig $contig == $lastAcontig\n";
-							my $beg=$bigarray[$pos][2];
-							my $end=$bigarray[$pos][3];
-							push @begarray, $beg;
-							push @endarray, $end;
-							my $keeptig = $contigarray[$pos];
-							push @comparecontigarray, $keeptig;
-							push @lengtharray, $bigarray[$pos][1];
+						my $beg=$bigarray[$pos][2];
+						my $end=$bigarray[$pos][3];
+						push @begarray, $beg;
+						push @endarray, $end;
+						my $keeptig = $contigarray[$pos];
+						push @comparecontigarray, $keeptig;
+						push @lengtharray, $bigarray[$pos][1];
 							#print "line 137 POSITION $pos $assembler length $bigarray[$pos][1]\t beginning  $beg\t end $end\t$keeptig\n";
-						}    
+						#}    
 					}
 					my $pos=0;
 					my $next=1;
 					$totoverlap=0;
 					#### DEBUGGING 3.29.15
 					#for (0..$numcontigs-1) {
-					for (0..($numlastcontig-1)) {
+					for (0..($numcontigs-1)) {
 						#print "line 151 POSITION $pos NEXT $next\n";
 						#### DEBUGGING 3.29.15
 						#if ($next <= ($numcontigs-1)) {  print "$next is <= $numcontigs-1\n";
-						if ($next <= ($numlastcontig-1)) {  #print "$next is <= $numlastcontig-1\n";
+						if ($next <= ($numcontigs-1)) {  #print "$next is <= $numlastcontig-1\n";
 						#	if ($begarray[$next] > $endarray[$pos]) { print "line 153 does not overlap $begarray[$next] > $endarray[$pos]\n";	
 							#### ADDING IN OVERLAP STEP: 			
 				 			my $nextbeg = $begarray[$next]; my $endpos = $endarray[$pos];
@@ -235,7 +250,7 @@ while (<FILES>) {
 							}
 						}
 					}
-					$numtokeep=scalar(@keepcontigarray); #print "line 232 $numtokeep contigs to keep\n"; print "sum = $sum\n";
+					$numtokeep=scalar(@keepcontigarray); print "line 232 $numtokeep contigs to keep\n"; print "sum = $sum\n";
 					for (0..$numtokeep-1) { $pos=$_; }#print "line 227 KEEPING $pos $keepcontigarray[$pos]\n"; } 
 					##################################################################
 					#          FINAL PRINT
@@ -245,7 +260,7 @@ while (<FILES>) {
 					print STATS "$numtokeep,$assembler,$totoverlap,$sum,";
 					for my $contig  (@keepcontigarray) {
 			    			print STATS "$keepcontighashBeg{$contig},$keepcontighashEnd{$contig},";
-			    			#print  "sum $sum keeping  $keepcontighashBeg{$contig},$keepcontighashEnd{$contig},$contig,";
+			    			print  "sum $sum keeping  $keepcontighashBeg{$contig},$keepcontighashEnd{$contig},$contig,";
 					}
 					print STATS "CONTIGS,";
 					for my $contig  (@keepcontigarray) {

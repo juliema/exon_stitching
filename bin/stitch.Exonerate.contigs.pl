@@ -16,7 +16,7 @@ while (<FH>) {
 	if (/(\S+).exonerate2.stats.OVERLAP.$overlap.csv/) {
 		my $gene=$1;
 		open FH1, "<$gene.exonerate2.stats.OVERLAP.$overlap.csv";
-		open OUT1, ">$gene.Stiched.Final.Contigs.fasta";
+		open OUT1, ">$gene.Stitched.Final.Contigs.fasta";
 		while (<FH1>) {  
 			#print;	
 			#### GET THE WHOLE CONTIG IF HAS THE WHOLE GENE

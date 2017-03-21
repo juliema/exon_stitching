@@ -4,26 +4,20 @@ use strict;
 use warnings;
 
 my $pwd=shift;
-
 my $overlap = 0;
 
 ### This script is for only one assembler when assembling genes. Other scripts are for if there are two and we want to take the best assembly.
 ### Contigs need to be in order they appear in the gene. so sort by the beginning of the contig.
 ### This script will look for all files in the folder called *.sorted, these should be exonerate results.
 ### It will create a file for each input file called  $input.stats.csv with all of the information about the contigs from exonerate
-
 ### rewriting script so there is only one loop for each of the multiple contigs.  so if Trinity > 1 go to same loop and if Trinity and Abyss > 1 go through the same Trinity loop.
 
-
 #open STATS, ">OUTPUT.csv"; my $date=localtime(time);
-
 `ls -l $pwd\/*exonerate2.sorted.ed.csv  >files`;
 open FILES, "<files"; 
 while (<FILES>) {
 	if (/(\S+).exonerate2/) {
 		my $inputfile=$1; 
-		#print "$inputfile\n";
-		#$inputfile =~ s/.csv//g;
 		my $statoutput= "$inputfile.exonerate2.stats.OVERLAP.$overlap.csv";
 		open STATS, ">$statoutput"; my $date=localtime(time);
 		print STATS "Statistics from aTRAM assemblies exonerate2  $date\n";
@@ -38,19 +32,19 @@ while (<FILES>) {
 		#### debugging 11.17.16
 		while (<FH>) { if (/^(\S+?),/ && ! /Library/) {  my $tax=$1; if (! exists $taxhash{$tax}) { $taxhash{$tax}=1; push @taxarray, $tax; $counttax++; } } }
 		print STATS "There are $counttax Libraries in $inputfile\n";	
-		#print "There are $counttax Libraries in $inputfile\n";
+		print "There are $counttax Libraries in $inputfile\n";
 		close FH;	
 		print STATS "Library,Number of Contigs,GeneLength,Full Gene (T/F),FG_Assembler,Assembler,LastContigNumber,TotalNumberofContigs,ContigstoKeep,Assembler,CombinedContigLength,TotalOverlap,Beginning,End,Beginning,End,ContigName\n";
 		############### Now for each taxon in the file loop through and find the best contig(s).
 		for my $tax (@taxarray) {
-			print STATS "$tax,"; #print "\n\n$tax\n\n";
+			print STATS "$tax,"; print "\n\n$tax\n\n";
 			my @contigarray=(); my $numcontigs=0; my @bigarray=(); my %contighash=();
 			############  count the number of contigs for each taxon, and push the line to array of arrays, and contig into an array.
 			open FH1, "<$inputfile.exonerate2.sorted.ed.csv";
 			#print "opening $inputfile.exonerate2.csv.ed.sorted";
 			my $pos=0;
 			while (<FH1>) {  #print;
-				if (/$tax?,(\S+?,\S+?,\S+?,\S+?,\S+?),(.*)$/ && ! /Library/) { #print "found $tax adding 1 to $numcontigs\n";
+				if (/$tax?,(\S+?,\S+?,\S+?,\S+?,\S+?),(.*)$/ && ! /Library/) { print "found $tax adding 1 to $numcontigs\n";
 					my $line = $1; my $contig = $2; push @contigarray, $contig; $numcontigs++; my @linearray = split(/,/, $line);
 					for my $each (@linearray) { push @{$bigarray[$pos]}, $each;}
 					$pos++;	
@@ -67,7 +61,7 @@ while (<FILES>) {
 				my $cont=$_;
 				my $cdslength=$bigarray[$cont][0];
 				my $alcontlength=$bigarray[$cont][1];
-				#### if there is a contig with the whole length of the gene take it. Preference is trinity.
+				#### if there is a contig with the whole length of the gene take it.
 				if ($cdslength == $alcontlength) { 
 					$contighash{$tax}=$contigarray[$cont];
 					$flag=1;
@@ -75,9 +69,9 @@ while (<FILES>) {
 					$end=$bigarray[$cont][3];
 				}
 			}
-			####  if we have a full gene for either trinity or abyss print out and end.
+			####  if we have a full gene print out done.
 			if ($flag == 1 ) { 
-				#print "fullgene\t$assembler and BEG $beg END $end\n"; print STATS "TRUE,$assembler,,,,,,,,0,$beg,$end,CONTIGS,$contighash{$tax}";  
+				print "fullgene\t$assembler and BEG $beg END $end\n"; print STATS "TRUE,$assembler,,,,,,,,0,$beg,$end,CONTIGS,$contighash{$tax}";  
 			}
 			#### If there is not one contig that is the whole length, go to last iteration, how many contigs from each assembler?  and examine the length of the contigs.
 			if ($flag == 0) {
