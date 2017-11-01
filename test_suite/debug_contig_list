@@ -1,0 +1,13 @@
+Inputfile	/data/Julie/exon_stitching/exon_stitching/GeneA.csv   Allowing overlap 10
+There are 10 Libraries in /data/Julie/exon_stitching/exon_stitching/GeneA
+Gene,Taxon,Number of Contigs,GeneLength,Contigs to Keep,Total Overlap,Combined Exon Length,Beginning,End,Beginning,End,ContigName
+GeneA,test_suite/GeneA.FG_1.ed.fasta,1,664,1,0,664,0,664,One_Contig_Full_Gene_1
+GeneA,test_suite/GeneA.FG_Mult.ed.fasta,2,664,1,0,664,0,664,Second_one_contig_full_gene_2
+GeneA,test_suite/GeneA.OneContig_1.ed.fasta,1,664,1,0,187,0,187,One_Contig_1
+GeneA,test_suite/GeneA.OneContig_2.ed.fasta,2,664,1,0,187,0,187,First_contig_1,
+GeneA,test_suite/GeneA.OneContig_2lng.ed.fasta,2,664,1,0,187,0,187,OneContig_1,
+GeneA,test_suite/GeneA.ThreeContigs_overlap.ed.fasta,3,664,3,7,639,0,140,133,376,405,661,One_overlap_1,Two_overalap_gap_2,Three_gap_end_3,
+GeneA,test_suite/GeneA.ThreeContigs_stitch.ed.fasta,4,664,3,0,639,12,276,287,488,490,664,One_1,Two_3,Three_4,
+GeneA,test_suite/GeneA.TwoContigs_2.ed.fasta,2,664,2,0,447,30,162,349,664,Two_nonOverlap_first_1,Two_nonOverlap_second_2,
+GeneA,test_suite/GeneA.TwoContigs_mult.ed.fasta,4,664,2,0,176,30,162,620,664,First_1,Fourth_4,
+GeneA,test_suite/GeneA.TwoContigs_overlap.ed.fasta,3,664,2,0,379,0,218,503,664,First_1,Third_3,

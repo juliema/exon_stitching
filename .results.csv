@@ -1,0 +1,34 @@
+exonerate from exonerate version 2.2.0
+Using glib version 2.4.7
+Built on Oct 17 2008
+Branch: unnamed branch
+
+exonerate: A generic sequence comparison tool
+Guy St.C. Slater. guy@ebi.ac.uk. 2000-2008.
+
+
+Examples of use:
+
+1. Ungapped alignment of any DNA or protein sequences:
+    exonerate queries.fa targets.fa
+2. Gapped alignment of Mouse proteins to Fugu proteins:
+    exonerate --model affine:local mouse.fa fugu.fa
+3. Find top 10 matches of each EST to a genome:
+    exonerate --model est2genome --bestn 10 est.fa genome.fa
+4. Find proteins with at least a 50% match to a genome:
+    exonerate --model protein2genome --percent 50 p.fa g.fa
+5. Perform a full Smith-Waterman-Gotoh alignment:
+    exonerate --model affine:local --exhaustive yes a.fa b.fa
+6. Many more combinations are possible.  To find out more:
+    exonerate --help
+    man exonerate
+
+
+--
+1 ERROR was encountered in argument processing
+--
+[ 1 ] : No value set for mandatory argument --target <path>
+--
+
+Use -h or --help for more information on usage
+
