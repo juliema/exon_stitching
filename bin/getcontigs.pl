@@ -34,7 +34,6 @@ while (<FILES>) {
 		print STATS "Gene,Taxon,Number of Contigs,GeneLength,Contigs to Keep,Total Overlap,Combined Exon Length,Beginning,End,Beginning,End,ContigName\n";
 		if ($debug eq 'debug') {print "There are $counttax Libraries in $inputfile\n";}
 		close FH;	
-		#print STATS "Taxon,Number of Contigs,GeneLength,Full Gene (T/F),FG_Assembler,Assembler,LastContigNumber,TotalNumberofContigs,ContigstoKeep,Assembler,CombinedContigLength,TotalOverlap,Beginning,End,Beginning,End,ContigName\n";
 		############### Now for each taxon in the file loop through and find the best contig(s).
 		for my $tax (@taxarray) {
 			print STATS "$gene,$tax,"; if ($debug eq 'debug') {print  "\n\n$tax\n";}
@@ -43,7 +42,6 @@ while (<FILES>) {
 			open FH1, "<$inputfile.results.sorted.csv";
 			my $pos=0;
 			while (<FH1>) { #print;
-				#Phum.PHUM336790-PA.pep,Gene.FG_1,664,664,0,664,1.17_3899_76096_5...11_1
 				if (/\S+?,$tax?,(\S+?,\S+?,\S+?,\S+?),(.*)$/) { if ($debug eq 'debug') {print "found $tax adding 1 to $numcontigs\n";}
 					my $line = $1; my $contig = $2; push @contigarray, $contig; $numcontigs++; my @linearray = split(/,/, $line);
 					for my $each (@linearray) { push @{$bigarray[$pos]}, $each;}
