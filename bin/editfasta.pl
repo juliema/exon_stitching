@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 my $pwd=shift;
-
+my $query=shift;
 print "$pwd\n";
 
 ## get list of fasta  files in this directory
@@ -30,5 +30,18 @@ while (<FH>) { # print;
 			elsif (/^\S+/ && ! /Command|Hostname|completed/) { print OUT2; }
 		}
 	}
+}
+
+open GENE_LIST, ">Gene_list.txt";
+open QUERY, "<$query";
+while (<QUERY>) {
+	if (/^>(.*)/) { 	
+		my $gene=$1; 
+		$gene=~ s/\s+/_/g; 
+		open GENE, ">$gene.fasta";
+		print GENE_LIST "$gene.fasta\n";
+		print GENE ">$gene\n";
+	}
+	else { print GENE; }
 }
 

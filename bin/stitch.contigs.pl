@@ -15,8 +15,8 @@ use warnings;
 ##### this prints out the stitched file and the summary file..
 
 my $overlap = shift;
-my $debug = 'debug';
-open SUMMARY, ">Summary_stats.csv";
+my $debug = 'off';
+open SUMMARY, ">Summary_stats.per.gene.csv";
 print SUMMARY "Locus,Taxon,Query_Length,Target_Length\n";
 ##### go through and determine the number of loci then for each locus... do
 
@@ -25,11 +25,11 @@ print SUMMARY "Locus,Taxon,Query_Length,Target_Length\n";
 open FILES, "<contig_files.txt";
 while (<FILES>) {
 	if (/(\S+).overlap.*.contig_list.csv/) {
-		my $gene=$1;
+		my $gene=$1;  #print "$gene\t$overlap\n $gene.overlap.$overlap.contig_list.csv\n";
 		### print out a fasta file for each gene
 		open FH, "<$gene.overlap.$overlap.contig_list.csv";	
 		open OUT1, ">$gene.stitched_exons.fasta";
-		while (<FH>) { print;
+		while (<FH>) { #print;
 			### this line look for the gene name at the beginning....
 			if (/(\S+)/ && ! /Inputfile/ && ! /There\s+are/ && ! /Number\s+of\s+Contigs/) {
 				my $line=$1;  if ($debug eq 'debug') { print "line from stats file is $line\n\n\n";}
@@ -45,12 +45,11 @@ while (<FILES>) {
 					my $end = $array[8];
 					my $contig = $array[9];  if ($debug eq 'debug') { print "contig is $contig\n\n";}
 					chomp $contig; $contig =~ s/,//g;
-					      my $seqflag=0;
+					my $seqflag=0;
 					my $sequence=();
 					open FASTA, "<$gene.exons.fasta";
 					while (<FASTA>) {
 						my $line=$_;
-						#print "$line";
 						### remove interleavedness
 						chomp $line;
 						if ($line =~ m/^>/) { 
@@ -64,19 +63,17 @@ while (<FILES>) {
 						elsif ($seqflag == 1 ) { $sequence = $sequence.$line;} #  print "adding line $line to sequence\n";}
 					}
 					close FASTA;
-					#if ($debug eq 'debug') { print "start $start end $end length $querylength\n";}
+					if ($debug eq 'debug') { print "start $start end $end length $querylength\n";}
 					###### PRINTS OUT NNNs AT THE BEGINNING OF THE GENE IF THE CONTIG DOES NOT START AT THE BEGINNING
 					if ($start > 0) { for (0..$start) { print OUT1 "NNN"; } }
-					print OUT1 "$sequence"; #print "SEQUENCE IS $sequence\n";
+					print OUT1 "$sequence"; 
 					##### PRINTS OUT NNNs AT THE END OF THE SEQUENCE IF CONTIG DOES NOT COVER THE FULL LENGTH
 					if ($end < $querylength) { for ($end .. ($querylength-1)) { print OUT1 "NNN";  } }
 					if ($debug eq 'debug') { my $num = ($querylength-1) - $end; print "printed $num groups of three NNNs\n";} 
 					print OUT1 "\n";
 				}
 				######### ELSE IF MORE THAN ONE CONTIG STITCH THEM TOGETHER WITH NNNS IN THE MIDDLE 
-				#$count=$count+2;
 				else {   if ($debug eq 'debug') { print "$infile more than one contig, stitching together numcontigs == $numcontigs\n";}
-					#print "\nlibrary $lib  more than one contig line 99\n";
 					my $count=0;
 					my $contigstart=($numcontigs*2) + 7;
 					my $gapstart=0;

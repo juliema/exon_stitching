@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-my $overlap = 10;
+my $overlap = shift;
 my $file = 'results.stats.OVERLAP';
 #PHUM615880.results.stats.OVERLAP.10.csv
 
