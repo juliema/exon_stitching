@@ -57,11 +57,11 @@ rm test_suite/*.ed.fasta
 
 echo "Testing one gene";
 #  run as   bash exon_stitching.sh  GeneA.fasta  test_suite/ 10
-if cmp -s PHUM336790-PA.overlap.10.contig_list.csv test_suite/debug_contig_list ; then
-	echo "Testing contig determination:  passed test!"
-else
-	echo "Testing contig determination: failed test need to go back and check the get_contig section" 
-fi
+#if cmp -s PHUM336790-PA.overlap.10.contig_list.csv test_suite/debug_contig_list ; then
+#	echo "Testing contig determination:  passed test!"
+#else
+#	echo "Testing contig determination: failed test need to go back and check the get_contig section" 
+#fi
  
 if cmp -s PHUM336790-PA.stitched_exons.fasta test_suite/debug_stitched_contigs ; then
 	echo "Testing contig stitching:  passed test!"
