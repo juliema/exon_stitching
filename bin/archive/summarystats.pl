@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-my $overlap = 10;
+my $overlap = shift;
 my $file = 'results.stats.OVERLAP';
 #PHUM615880.results.stats.OVERLAP.10.csv
 
@@ -44,7 +44,6 @@ while (<FH>) {
 				 $overlap = $1;
 			}
 			if (/^(\S+?),/  && ! /Statistics/ && ! /Inputfile/ && ! /There\s+are/ && ! /Library/ && ! /Allowing/) {
-			#if (/^(Aamic),/  && ! /Statistics/ && ! /Inputfile/ && ! /There\s+are/ && ! /Library/) {
 				my $lib = $1; # print "$lib\n";
 				if (! exists $libraryhash{$lib}) {
 					$libraryhash{$lib}=1;
@@ -97,41 +96,12 @@ while (<FH>) {
 				if ($proportion >= 0.10 ) { $onezerohash{$lib}++;  } 
 				if ($proportion < 0.10 )  { $lesstenhash{$lib}++; }
 				}		
-	#		else { print "$lib NO OUTPUT\n"; }
 		}
 	}
 }
 
-
-#print "There are $totalgenes total genes and $countlib libraries\n";
-
-
-#for my $gene (@genearray) {	
-#	print OUT "$gene\t$fullgenehash{$gene}\t$partgenehash{$gene}\n";
-#	print  "$gene\t$fullgenehash{$gene}\t$partgenehash{$gene}\n";
-#}
-
-#print OUT "Library\tNumGenes\tNumFullGenes\tNum95\tNum90\tNum80\tNum70\tNum50\tNum10\tLessthan10\n";
 print  "Number\tLibrary\tOverlap\tNumGenes\tNumFullGenes\tNum95\tNum90\tNum80\tNum70\tNum50\tNum10\tLessthan10\n";
-
-#for my $lib (@libarray) {
-#	print OUT "$lib\t$libraryhash{$lib}\t$libfullgenehash{$lib}\t$ninefivehash{$lib}\t$ninezerohash{$lib}\t$eightzerohash{$lib}\t$sevenzerohash{$lib}\t$fivezerohash{$lib}\t$onezerohash{$lib}\n";
-#	print "$lib\t$libraryhash{$lib}\t$libfullgenehash{$lib}\t$ninefivehash{$lib}\t$ninezerohash{$lib}\t$eightzerohash{$lib}\t$sevenzerohash{$lib}\t$fivezerohash{$lib}\t$onezerohash{$lib}\n";
-#}
 my $count=0;
-#print "OVERLAP = $overlap\n";
-#for my $lib (@libarray) {
-#	$count++;
-#        my $tot95 = $ninefivehash{$lib} + $libfullgenehash{$lib};
-#        my $tot90 = $ninezerohash{$lib} + $libfullgenehash{$lib};
-#        my $tot80 = $eightzerohash{$lib}+ $libfullgenehash{$lib};
-#        my $tot70 = $sevenzerohash{$lib} + $libfullgenehash{$lib};
-#        my $tot50 = $fivezerohash{$lib} + $libfullgenehash{$lib};
-#        my $tot10 = $onezerohash{$lib} + $libfullgenehash{$lib};
-#	my $rest =  $lesstenhash{$lib} + $tot10;
-#	#print "$count\t$lib\t$libraryhash{$lib}\t$libfullgenehash{$lib}\t$ninefivehash{$lib}\t$ninezerohash{$lib}\t$eightzerohash{$lib}\t$sevenzerohash{$lib}\t$fivezerohash{$lib}\t$onezerohash{$lib}\n";
-#	print "$count\t$lib\t$overlap\t$libraryhash{$lib}\t$libfullgenehash{$lib}\t$tot95\t$tot90\t$tot80\t$tot70\t$tot50\t$tot10\t$rest\n";
-#}
 for my $lib (@libarray) {
 	$count++;
 	#print "$lib $libraryhash{$lib}\t$libfullgenehash{$lib}\t$ninefivehash{$lib}\t$ninezerohash{$lib}\n";
@@ -142,9 +112,6 @@ for my $lib (@libarray) {
         my $tot50 = ($fivezerohash{$lib} + $libfullgenehash{$lib})/$libraryhash{$lib};
         my $tot10 = ($onezerohash{$lib} + $libfullgenehash{$lib})/$libraryhash{$lib};
 	my $rest =  ($lesstenhash{$lib} + $onezerohash{$lib} + $libfullgenehash{$lib})/$libraryhash{$lib};
-#	print "$rest =  ( $lesstenhash{$lib} + $tot10 ) / $libraryhash{$lib}\n";;
-
-	#print "$count\t$lib\t$libraryhash{$lib}\t$libfullgenehash{$lib}\t$ninefivehash{$lib}\t$ninezerohash{$lib}\t$eightzerohash{$lib}\t$sevenzerohash{$lib}\t$fivezerohash{$lib}\t$onezerohash{$lib}\n";
 	print "$count\t$lib\t$overlap\t$libraryhash{$lib}\t$libfullgenehash{$lib}\t$tot95\t$tot90\t$tot80\t$tot70\t$tot50\t$tot10\t$rest\n";
 }
 

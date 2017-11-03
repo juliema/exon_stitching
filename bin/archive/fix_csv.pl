@@ -9,8 +9,6 @@ my $output=shift;
 open FH, "<$input";
 open OUT, ">$output";
 
-#PHUM037810
-
 while (<FH>) {
     if (/(Library_ID\S+)/) {
         print OUT "$1\n";
