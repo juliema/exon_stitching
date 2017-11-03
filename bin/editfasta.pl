@@ -5,7 +5,7 @@ use warnings;
 
 my $pwd=shift;
 my $query=shift;
-print "$pwd\n";
+#print "$pwd\n";
 
 ## get list of fasta  files in this directory
 #`find -name "*best.fasta" | sed 's/^\\.\\///' >files`; # Use this version for very large numbers of files; sed patterns must be double-escaped
@@ -16,7 +16,8 @@ print "$pwd\n";
 open FH, "<files"; 
 while (<FH>) { # print;
 	if (/(\S+).fasta/) {
-		my $file=$1; print "$file\n";
+		my $file=$1; 
+		#print "$file\n";
 		open FH2, "<$file.fasta";
 		open OUT2, ">$file.ed.fasta";
 		my $num=0;

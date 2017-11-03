@@ -3,6 +3,8 @@
 use strict;
 use warnings;
 
+my $cwd = shift;
+
 my @taxarray=();
 my %taxhash=();
 my %full=();
@@ -16,7 +18,9 @@ my %lessten=();
 
 open OUT, ">Summary_stats.per.taxon.csv";
 print OUT "Taxon,NumGenes,FullExons,95%,90%,80%,70%,50%,10%\n";
-open FH, "</data/Julie/exon_stitching/exon_stitching/Summary_stats.per.gene.csv";
+print "Summary Stats Per Taxon\n";
+print "Taxon,NumGenes,FullExons,95%,90%,80%,70%,50%,10%\n";
+open FH, "<$cwd\/Summary_stats.per.gene.csv";
 while (<FH>) {
 	if (/\S+?,(\S+?),(\d+?),(\d+)$/) {
 		my $tax=$1;

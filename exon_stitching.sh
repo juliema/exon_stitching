@@ -28,9 +28,9 @@ perl $cwd\/bin/editfasta.pl $fastafilespath $myref;
 file="Gene_list.txt";
 cat $file | while read myref; do
 	ref=${myref%".fasta"};
-	echo $ref;
+	#echo $ref;
 	for taxon in $fastafilespath*.ed.fasta; do
-		echo $taxon;
+		#echo $taxon;
 		tax=${tax%".ed.fasta"};
 		#echo $tax;
 		exonerate --verbose 0 --model protein2genome $myref $taxon  --showvulgar no --showalignment no --ryo "$ref,$taxon,%ql,%qal,%qab,%qae,%ti\n" >> ${cwd}/$ref.results.csv;
@@ -42,7 +42,7 @@ done
 
 perl $cwd/bin/getcontigs.pl $cwd $myoverlap;
 perl $cwd\/bin/stitch.contigs.pl  $myoverlap;
-perl $cwd\/bin/summary_stats.pl Summary_stats.per.gene.csv;
+perl $cwd\/bin/summary_stats.pl $cwd;
 
 rm contig_files.txt;
 rm Gene_list.txt;
@@ -69,7 +69,7 @@ else
 	echo "Testing contig stitching: failed test need to go back and check stitching contigs." 
 fi
 
-echo "Testing multiple genes";
+#echo "Testing multiple genes";
 # run as bash exon_stitching.sh Mult_genes.fasta test_suite/ 10
 
 
