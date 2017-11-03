@@ -6,7 +6,7 @@
 
 # help menu
 if [ "$1" = "-h" ] ; then
-  echo "Usage: `basename $0` AminoAcidFile.fasta  path_to_target_assemblies/  overlap";
+  echo "Usage: bash `basename $0` AminoAcidFile.fasta  path_to_target_assemblies/  overlap";
   exit 0
 fi
 
