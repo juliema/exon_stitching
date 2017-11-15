@@ -11,7 +11,7 @@ print "$pwd\n";
 #`find -name "*best.fasta" | sed 's/^\\.\\///' >files`; # Use this version for very large numbers of files; sed patterns must be double-escaped
 
 `find $pwd -name  "*.fasta"  >files`; # Use this version for very large numbers of files; sed patterns must be double-escaped
-
+open NAMES, ">contig_ids.txt";
 ## open each file, remove funky characters and add a unique number to the end of each contig name. 
 open FH, "<files"; 
 while (<FH>) { # print;
@@ -24,7 +24,22 @@ while (<FH>) { # print;
 			if (/^>(.*)$/) {	
 				my $contig = $1;
 				$num++;
- 				$contig =~ s/[-,=@+\[\]:!]//g;
+				print NAMES "\"$contig\",";
+				#print "$contig\n";
+ 				$contig =~ s/'//g;
+ 				$contig =~ s/,//g;
+ 				$contig =~ s/\s+//g;
+ 				$contig =~ s/-//g;
+ 				$contig =~ s/=//g;
+ 				$contig =~ s/@//g;
+ 				$contig =~ s/\+//g;
+ 				$contig =~ s/\[//g;
+ 				$contig =~ s/\]//g;
+ 				$contig =~ s/://g;
+ 				$contig =~ s/!//g;
+				$contig =~ s/\|//g;
+				print NAMES "$contig\_$num\n";
+				#print "$contig edited\n";
 				print OUT2 ">$contig\_$num\n";
 			}
 			elsif (/^\S+/ && ! /Command|Hostname|completed/) { print OUT2; }
