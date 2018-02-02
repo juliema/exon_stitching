@@ -26,6 +26,7 @@ while (<FH>) { # print;
 				my $contig = $1;
 				$num++;
  				$contig =~ s/[-,=@+\[\]:!]//g;
+ 				$contig =~ s/\s+//g;
 				print OUT2 ">$contig\_$num\n";
 			}
 			elsif (/^\S+/ && ! /Command|Hostname|completed/) { print OUT2; }
