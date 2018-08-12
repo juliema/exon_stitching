@@ -73,13 +73,13 @@ perl $cwd/bin/getcontigs.pl $cwd $myoverlap;
 perl $cwd\/bin/stitch.contigs.pl  $myoverlap;
 perl $cwd\/bin/summary_stats.pl $cwd;
 
-#rm contig_files.txt;
-#rm Gene_list.txt;
-#rm *.sorted.csv;
-#rm files;
-#rm *results.csv
-#rm $fastafilespath/*.ed.fasta;
-#rm *.reference.fasta;
+rm contig_files.txt;
+rm Gene_list.txt;
+rm *.sorted.csv;
+rm files;
+rm *results.csv
+rm $fastafilespath/*.ed.fasta;
+rm *.reference.fasta;
 
 #### new comparison
  #  cmd  gene1.stitched_exons.fasta  test_suite/debug_stitched_contigs.fasta 
