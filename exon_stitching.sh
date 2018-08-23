@@ -82,9 +82,9 @@ rm $fastafilespath/*.ed.fasta;
 rm *.reference.fasta;
 
 #### new comparison
- #  cmd  gene1.stitched_exons.fasta  test_suite/debug_stitched_contigs.fasta 
+ #  cmp  gene1.stitched_exons.fasta  test_suite/debug_stitched_contigs
  #  diff  gene1.stitched_exons.fasta  test_suite/debug_stitched_contigs 
- #  cmd  gene1.overlap.10.contig_list.csv  test_suite/debug_gene1_contig_list.txt
+ #  cmp  gene1.overlap.10.contig_list.csv  test_suite/debug_gene1_contig_list.txt
  #  diff  gene1.overlap.10.contig_list.csv  test_suite/debug_gene1_contig_list.txt
 
 
