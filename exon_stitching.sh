@@ -54,15 +54,23 @@ while read -r reffile || [[ -n "$reffile" ]]; do
 	echo reference file  $reffile;
 	#echo $gene;
 	while read -r taxfile || [[ -n "$taxfile" ]]; do
-		tax=$taxfile
-		echo taxon $tax
+		tax=$taxfile;
+		sep="_";
+		othersep=".";
+		echo taxon $tax$sep;
 		while read -r assembly || [[ -n "$assembly" ]]; do
-			if [[ $assembly  = *$tax.* ]]; then
+			if [[ $assembly  = *$tax$sep* ]]; then
 				echo $assembly contains $tax
 				exonerate --verbose 0 --model protein2genome $reffile $assembly  --showvulgar no --showalignment no --ryo "$gene,$tax,%ql,%qal,%qab,%qae,%ti\n" >> ${cwd}/$gene.results.csv;
 				exonerate --verbose 0 --model protein2genome $reffile $assembly  --showvulgar no --showalignment no --ryo ">$tax,%ti,%qab\n%tcs\n" >> ${cwd}/$gene.exons.fasta;
 				LC_ALL=C sort -t, -k 1,1d -k 2,2d -k 5,5d  $cwd\/$gene.results.csv > $cwd\/$gene.results.sorted.csv;
                    		##rm $ref.results.csv;
+			elif [[ $assembly  = *$tax$othersep* ]]; then
+                                echo $assembly contains $tax
+                                exonerate --verbose 0 --model protein2genome $reffile $assembly  --showvulgar no --showalignment no --ryo "$gene,$tax,%ql,%qal,%qab,%qae,%ti\n" >> ${cwd}/$gene.results.csv;
+                                exonerate --verbose 0 --model protein2genome $reffile $assembly  --showvulgar no --showalignment no --ryo ">$tax,%ti,%qab\n%tcs\n" >> ${cwd}/$gene.exons.fasta;
+                                LC_ALL=C sort -t, -k 1,1d -k 2,2d -k 5,5d  $cwd\/$gene.results.csv > $cwd\/$gene.results.sorted.csv;
+                                ##rm $ref.results.csv;
 			fi
 		done < "$gene.list.txt"
 	done < "$mytax"
@@ -82,10 +90,10 @@ rm $fastafilespath/*.ed.fasta;
 rm *.reference.fasta;
 
 #### new comparison
- #  cmp  gene1.stitched_exons.fasta  test_suite/debug_stitched_contigs
+ #  cmp  gene1.stitched_exons.fasta  test_suite/debug_stitched_contigs 
  #  diff  gene1.stitched_exons.fasta  test_suite/debug_stitched_contigs 
- #  cmp  gene1.overlap.10.contig_list.csv  test_suite/debug_gene1_contig_list.txt
- #  diff  gene1.overlap.10.contig_list.csv  test_suite/debug_gene1_contig_list.txt
+ #  cmp  gene1.overlap.10.contig_list.csv  test_suite/debug_gene1_contig_list
+ #  diff  gene1.overlap.10.contig_list.csv  test_suite/debug_gene1_contig_list
 
 
 #if $debug
