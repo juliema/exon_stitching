@@ -42,7 +42,7 @@ while (<FILES>) {
 			open FH1, "<$inputfile.results.sorted.csv";
 			my $pos=0;
 			while (<FH1>) { #print;
-				if (/\S+?,$tax?,(\S+?,\S+?,\S+?,\S+?),(.*)$/) { if ($debug eq 'debug') {print "found $tax adding 1 to $numcontigs\n";}
+				if (/\S+?,$tax,(\S+?,\S+?,\S+?,\S+?),(.*)$/) { if ($debug eq 'debug') {print "found $tax adding 1 to $numcontigs\n";}
 					my $line = $1; my $contig = $2; push @contigarray, $contig; $numcontigs++; my @linearray = split(/,/, $line);
 					for my $each (@linearray) { push @{$bigarray[$pos]}, $each;}
 					$pos++;	
