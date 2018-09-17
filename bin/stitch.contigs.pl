@@ -11,11 +11,11 @@ use warnings;
 #
 ##########################################################
 
-### OUTPUTFILES >$gene.Stiched.Final.Contigs.fasta -- go directly to alignment
+### OUTPUTFILES >$gene.stitched_exons.fasta -- go directly to alignment
 ##### this prints out the stitched file and the summary file..
 
 my $overlap = shift;
-my $debug = 'off';
+my $debug = 'debug';
 open SUMMARY, ">Summary_stats.per.gene.csv";
 print SUMMARY "Locus,Taxon,Query_Length,Target_Length\n";
 ##### go through and determine the number of loci then for each locus... do
@@ -25,7 +25,7 @@ print SUMMARY "Locus,Taxon,Query_Length,Target_Length\n";
 open FILES, "<contig_files.txt";
 while (<FILES>) {
 	if (/(\S+).overlap.*.contig_list.csv/) {
-		my $gene=$1;  #print "$gene\t$overlap\n $gene.overlap.$overlap.contig_list.csv\n";
+		my $gene=$1;  print "$gene\t$overlap\n $gene.overlap.$overlap.contig_list.csv\n\n\n\n\n\n\n";
 		### print out a fasta file for each gene
 		open FH, "<$gene.overlap.$overlap.contig_list.csv";	
 		open OUT1, ">$gene.stitched_exons.fasta";
@@ -43,21 +43,30 @@ while (<FILES>) {
 				if ($numcontigs == 1) {   if ($debug eq 'debug') { print "LINE 46 infile $infile one contig $numcontigs\n\n";} 
 					my $start=$array[7];
 					my $end = $array[8];
-					my $contig = $array[9];  if ($debug eq 'debug') { print "contig is $contig\n\n";}
-					chomp $contig; $contig =~ s/,//g;
+					my $contig = $array[9];  if ($debug eq 'debug') { print "line 46 contig is $contig\n\n";}
+					chomp $contig; $contig =~ s/,//g; $contig =~ s/\|//g;
+					$contig = " " . $contig;   if ($debug eq 'debug') { print "line 48 contig is $contig\n\n";}
 					my $seqflag=0;
 					my $sequence=();
 					open FASTA, "<$gene.exons.fasta";
+					print OUT1 ">$infile.$contig.$numcontigs\n";  if ($debug eq 'debug') { print "printing $infile.$contig.$numcontigs  to outfile line 51\n"; }
 					while (<FASTA>) {
 						my $line=$_;
+						#$line = " " . $line;
 						### remove interleavedness
-						chomp $line;
-						if ($line =~ m/^>/) { 
+						chomp $line; #print "$line\n";
+						if ($line =~ m/^>/) { #print "This should be the > line $line\n"; 
 							$seqflag=0; 
-							if ($line =~ m/$infile,$contig/g) {
-								if ($debug eq 'debug') { print "THE infile is $infile  AND THE CONTIG IS $contig   MATCHED in this:\n$line\n\n";}
-								$seqflag =1; if ($debug eq 'debug') { print "LINE 63 ONE CONTIG LOOP >$infile.$contig.$numcontigs\n\n";} 
-								print OUT1 ">$infile.$contig.$numcontigs\n";
+							if ($debug eq 'debug') { print "line is $line  and infile is $infile, contig, $contig\n"; }
+							if ($line =~ /$infile/) {
+								if ($debug eq 'debug') {  print "line is $line  matched  $infile\n"; }
+								my $linecontig = $line;
+								$linecontig =~ s/>$infile\,(.*),\d+$/$1/g;  if ($debug eq 'debug') {  print "LINE 64 this should just be the contig $linecontig\n"; }
+								$linecontig =~ s/,//g; $linecontig =~ s/\|//g; $linecontig = " " . $linecontig;  if ($debug eq 'debug') {  print "LINE 66 this should just be the contig $linecontig\n"; }
+								if ($linecontig =~ /$contig/) {
+									if ($debug eq 'debug') { print "THE infile is $infile  AND THE CONTIG IS $contig   MATCHED in this:\n$line\n\n";}
+									$seqflag =1; if ($debug eq 'debug') { print "LINE 63 ONE CONTIG LOOP >$infile.$contig.$numcontigs\n\n";} 
+								}
 							}
 						}
 						elsif ($seqflag == 1 ) { $sequence = $sequence.$line;} #  print "adding line $line to sequence\n";}
@@ -83,6 +92,7 @@ while (<FILES>) {
 						my $start=$array[7+$count];
 						my $end=$array[8+$count];			
 						my $contig = $array[$contignumber];
+						$contig = " " . $contig; $contig =~ s/\|//g;   if ($debug eq 'debug') { print "contig is $contig\n\n";}
 						my $last=0;
 						my $gapend=0;
 						my $sequence='';
@@ -95,14 +105,38 @@ while (<FILES>) {
 							while (<FASTA>) {
 								my $line=$_;
 								chomp $line;
-								if ($line =~ /^>/) { 
-									$seqflag=0;
-									if ($line =~ m/$infile,$contig/g) {
-										$seqflag =1;  #print OUT1; 
-										print OUT1 ">$infile.$contig.$numcontigs\n";
-										if ($debug eq 'debug') { print ">$infile.$contig.$numcontigs\n";}
+						
+
+									if ($line =~ m/^>/) { #print "This should be the > line $line\n"; 
+										$seqflag=0; 
+										if ($debug eq 'debug') { print "line is $line  and infile is $infile, contig, $contig\n"; }
+										if ($line =~ /$infile/) {
+											if ($debug eq 'debug') {  print "line is $line  matched  $infile\n"; }
+											my $linecontig = $line;
+											$linecontig =~ s/>$infile\,(.*),\d+$/$1/g;  if ($debug eq 'debug') {  print "this should just be the contig $linecontig\n"; }
+											$linecontig = " " . $linecontig; $linecontig =~ s/\|//g; 
+											if ($linecontig =~ /$contig/) {
+												if ($debug eq 'debug') { print "THE infile is $infile  AND THE CONTIG IS $contig   MATCHED in this:\n$line\n\n";}
+												$seqflag =1; if ($debug eq 'debug') { print "LINE 63 ONE CONTIG LOOP >$infile.$contig.$numcontigs\n\n";} 
+												if ($debug eq 'debug') { print ">$infile.$contig.$numcontigs\n";}
+												print OUT1 ">$infile.$contig.$numcontigs\n";  if ($debug eq 'debug') { print "printing name to outfile like 102\n"; }
+											}
+										}
 									}
-								}
+						
+
+
+
+
+#									if ($line =~ /^>/) { 
+#									$seqflag=0;
+#									if ($line =~ /$infile/ && $line =~/$contig/) {
+#										$seqflag =1;  #print OUT1;
+#										##HERE 
+#										print OUT1 ">$infile.$contig.$numcontigs\n";  if ($debug eq 'debug') { print "printing name to outfile like 102\n"; }
+#										if ($debug eq 'debug') { print ">$infile.$contig.$numcontigs\n";}
+#									}
+#								}
 								elsif ($seqflag == 1 ) { $sequence = $sequence.$line; }
 							}
 							close FASTA;
@@ -123,14 +157,32 @@ while (<FILES>) {
 							while (<FASTA>) {
 								my $line=$_;
 								chomp $line;
-								if ($line =~ /^>/) { 
-									$seqflag=0;
-									if ($line =~ m/$infile,$contig/g) {
-										$seqflag =1;  #print OUT1; 
-										#print OUT1 ">$infile.$contig.$numcontigs\n";
-										if ($debug eq 'debug') { print ">$infile.$contig.$numcontigs\n";}
+
+
+								if ($line =~ m/^>/) { #print "This should be the > line $line\n"; 
+									$seqflag=0; 
+									if ($debug eq 'debug') { print "line is $line  and infile is $infile, contig, $contig\n"; }
+									if ($line =~ /$infile/) {
+										if ($debug eq 'debug') {  print "line is $line  matched  $infile\n"; }
+										my $linecontig = $line;
+										$linecontig =~ s/>$infile\,(.*),\d+$/$1/g;  if ($debug eq 'debug') {  print "this should just be the contig $linecontig\n"; }
+										$linecontig = " " . $linecontig; $linecontig =~ s/\|//g; 
+										if ($linecontig =~ /$contig/) {
+											if ($debug eq 'debug') { print "THE infile is $infile  AND THE CONTIG IS $contig   MATCHED in this:\n$line\n\n";}
+											$seqflag =1; if ($debug eq 'debug') { print "LINE 63 ONE CONTIG LOOP >$infile.$contig.$numcontigs\n\n";} 
+										}		
 									}
 								}
+
+
+#								if ($line =~ /^>/) { 
+#									$seqflag=0;
+#									if ($line =~ m/$infile/ && $line =~ /$contig/) {
+#										$seqflag =1;  #print OUT1; 
+#										#print OUT1 ">$infile.$contig.$numcontigs\n";
+#										if ($debug eq 'debug') { print ">$infile.$contig.$numcontigs\n";}
+#									}
+#								}
 								elsif ($seqflag == 1 ) { $sequence = $sequence.$line; }
 							}
 							print OUT1 "$sequence";
@@ -151,14 +203,40 @@ while (<FILES>) {
 							while (<FASTA>) {
 								my $line=$_;
 								chomp $line;
-								if ($line =~ /^>/) { 
-									$seqflag=0;
-									if ($line =~ m/$infile,$contig/g) {
-										$seqflag =1;  #print OUT1; 
-										#print OUT1 ">$infile.$contig.$numcontigs\n";
-										if ($debug eq 'debug') { print ">$infile.$contig.$numcontigs\n";}
+
+
+
+								if ($line =~ m/^>/) { #print "This should be the > line $line\n"; 
+									$seqflag=0; 
+									if ($debug eq 'debug') { print "line is $line  and infile is $infile, contig, $contig\n"; }
+									if ($line =~ /$infile/) {
+										if ($debug eq 'debug') {  print "line is $line  matched  $infile\n"; }
+										my $linecontig = $line;
+										$linecontig =~ s/>$infile\,(.*),\d+$/$1/g;  if ($debug eq 'debug') {  print "this should just be the contig $linecontig\n"; }
+										$linecontig = " " . $linecontig; $linecontig =~ s/\|//g; 
+										if ($linecontig =~ /$contig/) {
+											if ($debug eq 'debug') { print "THE infile is $infile  AND THE CONTIG IS $contig   MATCHED in this:\n$line\n\n";}
+											$seqflag =1; if ($debug eq 'debug') { print "LINE 63 ONE CONTIG LOOP >$infile.$contig.$numcontigs\n\n";} 
+										}	
 									}
 								}
+
+
+
+
+
+
+
+
+
+								#if ($line =~ /^>/) { 
+								#	$seqflag=0;
+								#	if ($line =~ /$infile/ && $line =~ /$contig/) {
+								#		$seqflag =1;  #print OUT1; 
+								#		#print OUT1 ">$infile.$contig.$numcontigs\n";
+								#		if ($debug eq 'debug') { print ">$infile.$contig.$numcontigs\n";}
+								#	}
+								#}
 								elsif ($seqflag == 1 ) { $sequence = $sequence.$line; }
 							}
 							print OUT1 "$sequence";

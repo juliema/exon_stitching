@@ -1,0 +1,10 @@
+FG_1
+FG_Mult
+OneContig_1
+OneContig_2
+OneContig_2lng
+ThreeContigs_overlap
+ThreeContigs_stitch
+TwoContigs_2
+TwoContigs_mult
+TwoContigs_overlap

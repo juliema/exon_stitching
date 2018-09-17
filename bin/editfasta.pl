@@ -1,5 +1,15 @@
 #!/usr/bin/env perl
 
+################################
+#
+#  This script edits the assembly atram output files. It removes wonky characters in the names of the genes
+#        and adds a unique number to the end of each one. output is *.ed.fasta
+#  This script also takes the file with all of the reference genes in it and makes a list of them and prints each
+#        to its own file.  *.reference.fasta
+#
+################################
+
+
 use strict;
 use warnings;
 
@@ -9,7 +19,7 @@ my $query=shift;
 
 ## get list of fasta  files in this directory
 #`find -name "*best.fasta" | sed 's/^\\.\\///' >files`; # Use this version for very large numbers of files; sed patterns must be double-escaped
-
+`find $pwd -empty -type f -delete`;
 `find $pwd -name  "*.fasta"  >files`; # Use this version for very large numbers of files; sed patterns must be double-escaped
 
 ## open each file, remove funky characters and add a unique number to the end of each contig name. 
@@ -40,10 +50,12 @@ while (<QUERY>) {
 	if (/^>(.*)/) { 	
 		my $gene=$1; 
 		$gene=~ s/\s+/_/g; 
-		open GENE, ">$gene.fasta";
-		print GENE_LIST "$gene.fasta\n";
+		open GENE, ">$gene.reference.fasta";
+		#print "$gene.fasta\n";
+		print GENE_LIST "$gene.reference.fasta\n";
 		print GENE ">$gene\n";
 	}
 	else { print GENE; }
 }
 
+#`rm files`;
